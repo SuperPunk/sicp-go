@@ -1,7 +1,7 @@
 package ch02
 
 type Node struct {
-	elem int
+	elem interface{}
 	next *Node
 }
 
@@ -12,7 +12,7 @@ func NewList(elements ...int) *Node {
 	return &Node{elements[0], NewList(elements[1:]...)}
 }
 
-func ListRef(node *Node, n int) int {
+func ListRef(node *Node, n int) interface{} {
 	if n == 0 {
 		return node.elem
 	}
@@ -42,4 +42,15 @@ func lengthIterHelper(node *Node, count int) int {
 		return count
 	}
 	return lengthIterHelper(node.next, count+1)
+}
+
+func EnumerateIntervalN(n int) *Node {
+	return EnumerateInterval(1, n)
+}
+
+func EnumerateInterval(low, high int) *Node {
+	if low == high {
+		return &Node{low, nil}
+	}
+	return &Node{low, EnumerateInterval(low+1, high)}
 }
