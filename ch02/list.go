@@ -44,13 +44,16 @@ func lengthIterHelper(node *Node, count int) int {
 	return lengthIterHelper(node.next, count+1)
 }
 
-func EnumerateIntervalN(n int) *Node {
-	return EnumerateInterval(1, n)
-}
-
 func EnumerateInterval(low, high int) *Node {
 	if low == high {
 		return &Node{low, nil}
 	}
 	return &Node{low, EnumerateInterval(low+1, high)}
+}
+
+func MapList(proc Proc, node *Node) *Node {
+	if node == nil {
+		return nil
+	}
+	return &Node{proc(node.elem), MapList(proc, node.next)}
 }

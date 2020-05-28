@@ -27,8 +27,9 @@ func TestMap(t *testing.T) {
 	n5 := &TreeNode{0, []*TreeNode{n1, n2}}
 	root := &TreeNode{0, []*TreeNode{n5, n3, n4}}
 
-	Map(func(i int) int {
-		return i * 2
+	Map(func(i interface{}) interface{} {
+		intI, _ := i.(int)
+		return intI * 2
 	}, root)
 
 	assert.Equal(t, 2, n1.data, "The two element should be same")

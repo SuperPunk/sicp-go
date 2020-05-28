@@ -1,7 +1,7 @@
 package ch02
 
 type TreeNode struct {
-	data     int
+	data     interface{}
 	children []*TreeNode
 }
 
