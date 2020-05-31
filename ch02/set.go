@@ -23,6 +23,20 @@ func ElementOfOrderedSet(x int, set *Node) bool {
 	return ElementOfOrderedSet(x, set.next)
 }
 
+// O(n)
+func IntersectionOrderedSet(set1, set2 *Node) *Node {
+	if set1 == nil || set2 == nil {
+		return nil
+	}
+	if set1.elem == set2.elem {
+		return &Node{set1.elem, IntersectionOrderedSet(set1.next, set2.next)}
+	}
+	if set1.elem.(int) < set2.elem.(int) {
+		return IntersectionOrderedSet(set1.next, set2)
+	}
+	return IntersectionOrderedSet(set1, set2.next)
+}
+
 func AdjoinSet(x interface{}, set *Node) *Node {
 	if ElementOfSet(x, set) {
 		return set
