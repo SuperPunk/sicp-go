@@ -9,9 +9,11 @@ import (
 func TestStreamEnumerateInterval(t *testing.T) {
 	s := StreamEnumerateInterval(1, 10)
 	assert.Equal(t, 3, s.StreamRef(2))
+	assert.Equal(t, 3, s.StreamRef(2)) // trigger memoize
+	assert.Equal(t, 3, s.StreamRef(2)) // trigger memoize
 }
 
 func TestStream_StreamFilter(t *testing.T) {
 	s := StreamEnumerateInterval(10000, 1000000).StreamFilter(ch01.IsPrime)
-	assert.Equal(t, 10009, s.next().value)
+	assert.Equal(t, 10009, s.StreamRef(1))
 }

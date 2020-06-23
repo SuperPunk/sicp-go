@@ -13,13 +13,15 @@ type StreamWalkProc func(int)
 
 type StreamPredication func(int) bool
 
+func ConsStream(value int, promise Promise) *Stream {
+	return &Stream{value, memoize(promise)}
+}
+
 func StreamEnumerateInterval(low, high int) *Stream {
 	if low >= high {
 		return nil
 	}
-	return &Stream{low, func() *Stream {
-		return StreamEnumerateInterval(low+1, high)
-	}}
+	return ConsStream(low, memoize(func() *Stream { return StreamEnumerateInterval(low+1, high) }))
 }
 
 func (s Stream) StreamRef(n int) int {
@@ -34,9 +36,7 @@ func (s *Stream) StreamFilter(p StreamPredication) *Stream {
 		return nil
 	}
 	if p(s.value) {
-		return &Stream{s.value, func() *Stream {
-			return s.next().StreamFilter(p)
-		}}
+		return ConsStream(s.value, func() *Stream { return s.next().StreamFilter(p) })
 	} else {
 		return s.next().StreamFilter(p)
 	}
@@ -46,9 +46,7 @@ func (s *Stream) StreamMap(p StreamMapProc) *Stream {
 	if s == nil {
 		return nil
 	}
-	return &Stream{p(s.value), func() *Stream {
-		return s.next().StreamMap(p)
-	}}
+	return ConsStream(p(s.value), func() *Stream { return s.next().StreamMap(p) })
 }
 
 func (s *Stream) StreamForEach(p StreamWalkProc) {
@@ -57,4 +55,16 @@ func (s *Stream) StreamForEach(p StreamWalkProc) {
 	}
 	p(s.value)
 	s.next().StreamForEach(p)
+}
+
+func memoize(p Promise) Promise {
+	alreadyRun := false
+	var result *Stream
+	return func() *Stream {
+		if !alreadyRun {
+			result = p()
+			alreadyRun = true
+		}
+		return result
+	}
 }
